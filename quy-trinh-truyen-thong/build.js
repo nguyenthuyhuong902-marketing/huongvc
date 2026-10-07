@@ -101,279 +101,348 @@ const footer = new Footer({ children: [new Paragraph({ alignment: AlignmentType.
 
 // ---------- content ----------
 const C = [];
+const H3 = t => new Paragraph({ spacing: { before: 160, after: 80 }, keepNext: true,
+  children: [new TextRun({ text: t, bold: true, italics: true, font: FONT, size: 21, color: DARK })] });
+// Thanh đỏ đánh dấu đầu mỗi phần; phần B, C sang trang mới để tách riêng được
+const PART = (code, title, note, newPage = true) => {
+  C.push(new Paragraph({
+    heading: HeadingLevel.HEADING_1, pageBreakBefore: newPage, keepNext: true,
+    spacing: { before: newPage ? 0 : 320, after: note ? 0 : 160 },
+    shading: { type: ShadingType.CLEAR, color: 'auto', fill: RED },
+    indent: { left: 0, right: 0 },
+    children: [new TextRun({ text: ` ${code}. ${title}`, bold: true, font: FONT, size: 26, color: 'FFFFFF' })],
+  }));
+  if (note) C.push(new Paragraph({ spacing: { before: 80, after: 160 }, keepNext: true,
+    children: runs(note, { italics: true, color: GREY, size: 19 }) }));
+};
+const SEC = t => new Paragraph({ heading: HeadingLevel.HEADING_2, spacing: { before: 280, after: 120 }, keepNext: true,
+  children: [new TextRun({ text: t, bold: true, font: FONT, size: 24, color: RED })] });
+const SUB = t => new Paragraph({ heading: HeadingLevel.HEADING_3, spacing: { before: 200, after: 100 }, keepNext: true,
+  children: [new TextRun({ text: t, bold: true, font: FONT, size: 22, color: DARK })] });
+let numRef = 0;
+const NUMS = items => { numRef++; items.forEach(t => C.push(NL(t, 'n' + numRef))); };
+const NOTE = t => P(t, { italics: true, color: GREY, size: 19 });
 
-// Title block
+// ===== Bìa =====
 C.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 240, after: 80 }, children: [
   new TextRun({ text: 'QUY TRÌNH', font: FONT, size: 32, bold: true, color: RED })] }));
 C.push(new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 240 }, children: [
   new TextRun({ text: 'QUẢN TRỊ RỦI RO TRUYỀN THÔNG VÀ XỬ LÝ THÔNG TIN TIÊU CỰC TRÊN MẠNG XÃ HỘI', font: FONT, size: 26, bold: true, color: RED })] }));
 C.push(table([2600, 6426], ['Thông tin', 'Nội dung'], [
-  ['Tình trạng', 'Dự thảo trình Ban Điều hành'],
+  ['Tình trạng', 'Dự thảo lần 2, trình Ban Điều hành'],
   ['Ngày soạn', '07/10/2026'],
   ['Đơn vị chủ trì', 'Marketing VietCredit'],
-  ['Đơn vị phối hợp', 'Quản lý sản phẩm (PD/PM), Chăm sóc khách hàng (CS), đối tác Màn Hình Cộng (MHC)'],
+  ['Đơn vị phối hợp', 'Quản lý sản phẩm (PD/PM), Chăm sóc khách hàng (CS), Pháp chế, đối tác Màn Hình Cộng (MHC)'],
   ['Sản phẩm áp dụng giai đoạn 1', 'Thẻ tín dụng VietCredit x Điện Máy Xanh (VC x DMX); TikTok BNPL'],
 ], { boldFirst: true }));
+C.push(gap());
+C.push(SUB('Tài liệu gồm 4 phần'));
+C.push(table([1000, 4426, 3600], ['Phần', 'Nội dung', 'Người đọc'], [
+  ['A', 'Tổng quan: mục đích, phạm vi, sơ đồ quy trình trên một trang', 'Ban Điều hành, tất cả các bên'],
+  ['B', 'Phối hợp giữa VietCredit và MHC: tiêu chí phân loại, quyền tự xử lý, lịch gửi file, thời hạn, báo cáo, mẫu biểu', 'MHC và Marketing. Phần này gửi MHC làm thỏa thuận làm việc'],
+  ['C', 'Quy trình nội bộ VietCredit: ai cho ý kiến, thời hạn nội bộ, xử lý sự vụ nghiêm trọng, duyệt chi phí, phòng ngừa', 'Marketing, PD/PM, CS, Pháp chế, BĐH. Không gửi MHC; sau này ban hành thành quy trình nội bộ'],
+  ['D', 'Kế hoạch triển khai và các nội dung cần Ban Điều hành quyết định', 'Ban Điều hành'],
+], { boldFirst: true }));
 
-// 1
-C.push(H1('1. Mục đích'));
-C.push(P('Quy trình này quy định cách VietCredit phát hiện, phân loại, xử lý và báo cáo các thông tin tiêu cực về công ty và sản phẩm trên mạng xã hội và báo điện tử. Mục tiêu cụ thể:'));
-C.push(BL('Phát hiện sớm thông tin tiêu cực, trước khi bài viết lan rộng.'));
-C.push(BL('Phân rõ case nào đối tác MHC được tự xử lý ngay theo kịch bản đã duyệt, case nào phải hỏi ý kiến VietCredit, case nào phải báo Ban Điều hành.'));
-C.push(BL('Rút ngắn thời gian từ lúc phát hiện đến lúc có phương án, giảm việc trao đổi thủ công giữa hai bên.'));
-C.push(BL('Chuyển các phàn nàn lặp lại về cho PD/PM và CS để sửa nguyên nhân gốc, thay vì chỉ xử lý từng bài đăng.'));
+// ===== PHẦN A =====
+PART('PHẦN A', 'TỔNG QUAN', null);
 
-// 2
-C.push(H1('2. Phạm vi áp dụng'));
-C.push(H2('2.1. Sản phẩm'));
-C.push(P('Giai đoạn 1 áp dụng đầy đủ quy trình (giám sát, xử lý chủ động, báo cáo) cho hai sản phẩm: Thẻ tín dụng VC x DMX và TikTok BNPL.'));
-C.push(P('Các dự án khác đang có báo cáo Social listening vẫn được MHC theo dõi và tổng hợp như hiện tại. Riêng sự vụ Cấp độ 1 (mục 5.4) thuộc bất kỳ sản phẩm nào cũng xử lý theo luồng khẩn của quy trình này.'));
-C.push(P('Sau giai đoạn 1, Marketing đề xuất Ban Điều hành bổ sung sản phẩm vào danh mục khi sản phẩm đáp ứng ít nhất một tiêu chí sau:'));
-C.push(BL('VietCredit chịu toàn bộ rủi ro của dự án.'));
-C.push(BL('Dự án có biên lợi nhuận (margin) tốt, cần bảo vệ doanh số.'));
-C.push(BL('Dự án đang thử nghiệm, hoặc đang có vấn đề cần đo lường, giám sát, xử lý.'));
-C.push(H2('2.2. Kênh theo dõi'));
-C.push(P('Facebook (fanpage, nhóm, trang cá nhân công khai), TikTok, YouTube, Threads, báo điện tử và trang tin. Danh sách kênh có thể mở rộng theo năng lực hệ thống Social listening của MHC.'));
+C.push(SEC('A1. Mục đích'));
+C.push(BL('Phát hiện sớm thông tin tiêu cực về VietCredit và sản phẩm trên mạng xã hội, báo điện tử.'));
+C.push(BL('Quy định rõ việc nào MHC được làm ngay, việc nào phải hỏi VietCredit, việc nào phải báo Ban Điều hành.'));
+C.push(BL('Có phương án trong ngày cho tin thông thường và trong 4 giờ cho sự vụ nghiêm trọng.'));
+C.push(BL('Chuyển các phàn nàn lặp lại về cho PD/PM, CS để sửa tận gốc.'));
 
-// 3
-C.push(H1('3. Từ viết tắt và thuật ngữ'));
+C.push(SEC('A2. Phạm vi áp dụng'));
+C.push(table([2200, 6826], ['Hạng mục', 'Áp dụng'], [
+  ['Sản phẩm giai đoạn 1', 'Thẻ tín dụng VC x DMX; TikTok BNPL. Áp dụng toàn bộ quy trình.'],
+  ['Các dự án khác', 'Các dự án đang có báo cáo Social listening: MHC tiếp tục theo dõi, tổng hợp như hiện tại. Sự vụ nghiêm trọng (Cấp độ 1) của bất kỳ dự án nào đều xử lý theo luồng khẩn.'],
+  ['Mở rộng sau này', ['Marketing đề xuất BĐH bổ sung sản phẩm đáp ứng ít nhất một tiêu chí:',
+    '• VietCredit chịu toàn bộ rủi ro của dự án;',
+    '• dự án có margin tốt;',
+    '• dự án đang thử nghiệm hoặc có vấn đề cần đo lường, giám sát.']],
+  ['Kênh theo dõi', 'Facebook (fanpage, nhóm, trang cá nhân công khai), TikTok, YouTube, Threads, báo điện tử và trang tin.'],
+], { boldFirst: true }));
+
+C.push(SEC('A3. Thuật ngữ'));
 C.push(table([2300, 6726], ['Thuật ngữ', 'Giải thích'], [
-  ['VC', 'VietCredit'],
-  ['MHC', 'Màn Hình Cộng, đối tác cung cấp dịch vụ Social listening và quản trị tiêu cực chủ động (Crisis management) cho VietCredit'],
-  ['BĐH', 'Ban Điều hành'],
+  ['MHC', 'Màn Hình Cộng, đối tác cung cấp dịch vụ Social listening và gói quản trị tiêu cực chủ động cho VietCredit'],
   ['PD/PM', 'Đơn vị phát triển và quản lý sản phẩm phụ trách sản phẩm liên quan'],
   ['CS', 'Chăm sóc khách hàng'],
-  ['Social listening', 'Theo dõi, cảnh báo, báo cáo các thảo luận về VietCredit, sản phẩm của VietCredit và đối thủ'],
-  ['Seeding', 'Bình luận định hướng, giải thích thông tin, pha loãng thảo luận tiêu cực dưới bài viết công khai'],
-  ['Report', 'Báo cáo bài viết với nền tảng để hạn chế tương tác, hạn chế tiếp cận người dùng khác'],
-  ['Gỡ bài', 'Xử lý bằng biện pháp kỹ thuật để bài viết sai sự thật hoặc gây ảnh hưởng nghiêm trọng bị gỡ khỏi nền tảng'],
-  ['Alert OTT', 'Cảnh báo khẩn qua ứng dụng nhắn tin (Zalo, Telegram...) gửi ngay khi phát hiện sự vụ lớn'],
+  ['BĐH', 'Ban Điều hành'],
+  ['Seeding', 'Viết bình luận để giải thích thông tin, định hướng và pha loãng thảo luận tiêu cực dưới bài viết công khai'],
+  ['Report', 'Báo cáo bài viết với nền tảng để hạn chế tương tác, hạn chế bài tiếp cận người khác'],
+  ['Gỡ bài', 'Dùng biện pháp kỹ thuật để bài viết bị gỡ khỏi nền tảng'],
+  ['Alert OTT', 'Cảnh báo khẩn qua nhóm chat (Zalo, Telegram...) khi có sự vụ lớn'],
   ['Tương tác', 'Tổng lượt thích, bình luận và chia sẻ của một bài viết'],
 ], { boldFirst: true }));
 
-// 4
-C.push(H1('4. Vai trò và trách nhiệm'));
-C.push(table([1700, 7326], ['Đơn vị', 'Trách nhiệm'], [
-  ['MHC', [
-    '• Giám sát liên tục theo bộ từ khóa của từng sản phẩm.',
-    '• Phân loại tin theo nhóm nội dung và chấm cấp độ sự vụ.',
-    '• Tự xử lý các nhóm được ủy quyền (Nhóm 1, Nhóm 4) theo kịch bản đã duyệt.',
-    '• Gửi file tổng hợp hằng ngày, gửi Alert OTT và Form đề xuất khi có sự vụ lớn.',
-    '• Triển khai phương án đã chốt (seeding, report, gỡ bài), theo dõi sau xử lý và báo cáo định kỳ.',
-    '• Đầu mối theo đề xuất của MHC: Hằng, Lam.']],
-  ['Marketing VC', [
-    '• Đầu mối duy nhất làm việc với MHC: tiếp nhận đề xuất, điều phối ý kiến nội bộ, gửi phương án đã chốt cho MHC.',
-    '• Duyệt kịch bản seeding mẫu và cập nhật thư viện kịch bản.',
-    '• Báo cáo BĐH sự vụ Cấp độ 1 và báo cáo tháng.',
-    '• Quản lý quota gói dịch vụ và chi phí xử lý phát sinh ngoài gói.']],
-  ['PD/PM sản phẩm', [
-    '• Cho ý kiến về nội dung chuyên môn (tính năng, lỗi, phí, chính sách) trong thời hạn quy định.',
-    '• Báo trước cho Marketing các thay đổi có thể gây phản ứng: bảo trì, lỗi đã biết, thay đổi phí, chính sách, chiến dịch.',
-    '• Nhận danh sách vấn đề lặp lại từ báo cáo tháng và lên kế hoạch khắc phục.']],
-  ['CS', [
-    '• Xác minh thông tin khách hàng khi bài viết có đủ dữ liệu nhận diện.',
-    '• Liên hệ trực tiếp khách hàng khi phương án là "Liên hệ".',
-    '• Cung cấp câu trả lời chuẩn cho các thắc mắc thường gặp; báo Marketing khi tổng đài quá tải (liên quan Nhóm 1).']],
-  ['Pháp chế', ['• Tham gia khi bài viết có dấu hiệu vu khống, xúc phạm, lộ thông tin khách hàng, hoặc khi cần gửi yêu cầu gỡ bài chính thức tới nền tảng, cơ quan báo chí.']],
-  ['BĐH', ['• Phê duyệt quy trình và danh mục sản phẩm áp dụng.', '• Chỉ đạo xử lý sự vụ Cấp độ 1, duyệt phát ngôn chính thức và chi phí xử lý vượt hạn mức.']],
-], { boldFirst: true }));
-
-// 5
-C.push(H1('5. Tiêu chí phân loại thông tin tiêu cực'));
-C.push(P('Mỗi tin được MHC đánh giá theo hai trục: nội dung (đúng hay sai sự thật, mức ảnh hưởng tới uy tín, có xúc phạm, vu khống hay vi phạm chính sách nền tảng không) và tương tác (lượt thích, bình luận, chia sẻ, tốc độ lan truyền, mức ảnh hưởng của nguồn đăng). Kết quả là một nhóm nội dung (mục 5.1) và một cấp độ sự vụ (mục 5.4).'));
-
-C.push(H2('5.1. Nhóm nội dung và quyền xử lý'));
-C.push(table([1250, 3400, 1700, 2676], ['Nhóm', 'Nội dung', 'Quyền xử lý', 'Hướng xử lý'], [
-  ['Nhóm 1', 'Gọi hotline mãi không được; cho rằng "VietCredit lừa đảo"', 'MHC tự xử lý, báo cáo sau', 'Seeding theo kịch bản mẫu. Hướng bình luận: VietCredit đảm bảo dịch vụ nhanh chóng, minh bạch, an toàn; khách hàng cần hỗ trợ xin liên hệ CSKH VietCredit (hotline 1900 6515).'],
-  ['Nhóm 2', 'Lỗi tính năng, không thao tác được, mới phát sinh', 'Hỏi ý kiến VC', 'Marketing chuyển PD/PM xác nhận lỗi và hướng trả lời; CS liên hệ khách hàng nếu cần.'],
-  ['Nhóm 3', 'Thông tin tiêu cực về doanh nghiệp, tình hình kinh doanh, lãnh đạo', 'Hỏi ý kiến VC', 'Marketing xin ý kiến PD/PM liên quan; báo BĐH nếu thuộc Cấp độ 1.'],
-  ['Nhóm 4', 'Hỏi bùng nợ được không, có về nhà đòi nợ không, nên vay bên nào', 'MHC tự xử lý theo quota còn lại của gói', 'Dùng bộ kịch bản đang áp dụng. Không cần xử lý 100% số tin vì số lượng lớn; ưu tiên bài có tương tác cao.'],
-  ['Nhóm 5', 'Nội dung khác chưa có kịch bản', 'Hỏi ý kiến VC', 'MHC đề xuất hướng xử lý; sau khi chốt, kịch bản được đưa vào thư viện để lần sau tự xử lý.'],
+C.push(SEC('A4. Quy trình trên một trang'));
+C.push(new Paragraph({ keepNext: true, spacing: { after: 120 }, children: runs('Mỗi tin tiêu cực đi vào một trong ba luồng. Cách xếp luồng ở mục B3.') }));
+C.push(table([1500, 3000, 2000, 2526], ['Luồng', 'Khi nào', 'Ai quyết định', 'Thời hạn'], [
+  ['A. MHC tự xử lý', 'Tin mức thấp thuộc nhóm đã có kịch bản duyệt sẵn (hotline, "lừa đảo", hỏi bùng nợ)', 'MHC, theo kịch bản đã duyệt', 'Xử lý ngay, báo lại trong file hằng ngày'],
+  ['B. Hỏi ý kiến VietCredit', 'Tin mức trung bình, hoặc nhóm chưa có kịch bản (lỗi tính năng, tin về doanh nghiệp, lãnh đạo...)', 'Marketing, sau khi hỏi PD/PM, CS', 'MHC gửi lúc 10:30, VC trả lời trước 14:00, xử lý xong trong ngày'],
+  ['C. Khẩn', 'Sự vụ nghiêm trọng (Cấp độ 1)', 'BĐH', 'Cảnh báo trong 30 phút, có phương án trong 4 giờ'],
 ], { boldFirst: true }));
 C.push(gap());
-C.push(P('Quyền tự xử lý của Nhóm 1 và Nhóm 4 chỉ áp dụng khi sự vụ ở Cấp độ 3. Nếu bài viết thuộc hai nhóm này nhưng có lan tỏa cao (trên 100 tương tác), xuất hiện trên báo điện tử, hoặc nêu một trường hợp khách hàng cụ thể có bằng chứng, MHC không tự xử lý mà chuyển sang Luồng B hoặc Luồng C theo cấp độ.'));
+C.push(new Paragraph({ keepNext: true, spacing: { after: 120 }, children: runs('Ai làm gì theo từng bước:') }));
+C.push(table([1700, 2600, 2400, 2326], ['Bước', 'MHC', 'Marketing VC', 'PD/PM, CS, Pháp chế, BĐH'], [
+  ['1. Phát hiện', 'Theo dõi liên tục, ghi nhận tin tiêu cực', '', ''],
+  ['2. Phân loại', 'Xếp nhóm nội dung và cấp độ, chọn luồng', '', ''],
+  ['3. Xử lý Luồng A', 'Seeding theo kịch bản, ghi kết quả vào file 10:30', 'Xem file, không cần duyệt', ''],
+  ['4. Xử lý Luồng B', 'Gửi case kèm đề xuất trong file 10:30; triển khai khi có phương án', 'Chuyển đơn vị liên quan, chốt phương án, gửi lại MHC trước 14:00', 'Cho ý kiến trước 13:30'],
+  ['5. Xử lý Luồng C', 'Alert OTT trong 30 phút, gửi Form đề xuất, cập nhật diễn biến', 'Xác nhận trong 1 giờ, báo BĐH, họp nhóm xử lý', 'BĐH quyết phương án, duyệt phát ngôn và chi phí'],
+  ['6. Sau xử lý', 'Theo dõi bài viết, báo cáo tuần, tháng', 'Báo cáo BĐH, chuyển vấn đề lặp lại cho PD/PM', 'PD/PM, CS sửa nguyên nhân gốc'],
+], { boldFirst: true }));
 
-C.push(H2('5.2. Mức độ lan tỏa'));
-C.push(table([2200, 6826], ['Mức lan tỏa', 'Tiêu chí'], [
-  ['Cao', ['• Bài viết trên mạng xã hội có tổng tương tác trên 100, hoặc', '• Bài viết xuất hiện trên trang tin, báo điện tử.']],
-  ['Trung bình', 'Bài viết trên mạng xã hội có tổng tương tác từ 50 đến 100.'],
-  ['Thấp', 'Bài viết trên mạng xã hội có tổng tương tác dưới 50.'],
+// ===== PHẦN B =====
+PART('PHẦN B', 'PHỐI HỢP GIỮA VIETCREDIT VÀ MHC',
+  'Phần này gửi MHC. Đây là thỏa thuận làm việc giữa hai bên: MHC làm gì, được tự quyết việc gì, gửi gì cho VietCredit và khi nào.');
+
+C.push(SEC('B1. Đầu mối liên lạc'));
+C.push(table([2200, 3400, 3426], ['Bên', 'Đầu mối', 'Kênh'], [
+  ['VietCredit', 'Marketing VietCredit: [tên, số điện thoại]. MHC chỉ làm việc qua đầu mối này, không liên hệ trực tiếp các phòng ban khác.', 'Email cho file hằng ngày, báo cáo; nhóm OTT cho cảnh báo khẩn'],
+  ['MHC', 'Hằng, Lam (theo đề xuất của MHC)', 'Như trên'],
+  ['Nhóm OTT cảnh báo khẩn', 'Đầu mối hai bên và người được Marketing bổ sung', '[Zalo hoặc Telegram, hai bên chốt]'],
+], { boldFirst: true }));
+
+C.push(SEC('B2. Việc MHC thực hiện'));
+NUMS([
+  'Theo dõi liên tục trên hệ thống Social listening theo bộ từ khóa VietCredit cung cấp.',
+  'Phân loại mỗi tin tiêu cực theo mục B3.',
+  'Tự xử lý các tin thuộc Luồng A theo kịch bản đã duyệt, không cần hỏi lại.',
+  'Gửi file tổng hợp lúc 10:30 các ngày làm việc (Mẫu 01), gồm cả tin đã tự xử lý và tin cần ý kiến VietCredit kèm đề xuất.',
+  'Gửi Alert OTT và Form đề xuất (Mẫu 02) khi có sự vụ Cấp độ 1, kể cả ngoài giờ.',
+  'Triển khai phương án VietCredit đã chốt.',
+  'Theo dõi bài viết sau xử lý, báo ngay nếu bài xuất hiện lại hoặc lan sang kênh khác.',
+  'Gửi báo cáo tuần, tháng (Mẫu 03).',
+  'Trong lúc chờ phương án chính thức, tư vấn VietCredit những việc nên tránh.',
+]);
+
+C.push(SEC('B3. Phân loại tin tiêu cực'));
+C.push(P('MHC xếp mỗi tin theo ba bước: xác định nhóm nội dung, đo mức lan tỏa, rồi ra cấp độ. Cấp độ quyết định luồng xử lý.'));
+
+C.push(SUB('Bước 1. Nhóm nội dung'));
+C.push(table([1100, 3300, 1900, 2726], ['Nhóm', 'Nội dung', 'Quyền xử lý', 'Cách làm'], [
+  ['Nhóm 1', 'Gọi hotline mãi không được; cho rằng "VietCredit lừa đảo"', 'MHC tự xử lý', 'Seeding theo kịch bản mẫu: VietCredit đảm bảo dịch vụ nhanh chóng, minh bạch, an toàn; khách hàng cần hỗ trợ xin liên hệ CSKH VietCredit, hotline 1900 6515.'],
+  ['Nhóm 2', 'Lỗi tính năng, không thao tác được (mới phát sinh)', 'Hỏi VietCredit', 'Đề xuất hướng trả lời trong file 10:30.'],
+  ['Nhóm 3', 'Tin tiêu cực về doanh nghiệp, tình hình kinh doanh, lãnh đạo', 'Hỏi VietCredit', 'Đề xuất hướng trả lời. Nếu là Cấp độ 1 thì chuyển Luồng C.'],
+  ['Nhóm 4', 'Hỏi bùng nợ được không, có về nhà đòi nợ không, nên vay bên nào', 'MHC tự xử lý trong quota còn lại của gói', 'Dùng bộ kịch bản đang áp dụng. Không cần xử lý 100% số tin; ưu tiên bài nhiều tương tác.'],
+  ['Nhóm 5', 'Nội dung khác, chưa có kịch bản', 'Hỏi VietCredit', 'Đề xuất hướng trả lời. Kịch bản được chốt sẽ thêm vào thư viện để lần sau MHC tự xử lý.'],
+], { boldFirst: true }));
+
+C.push(SUB('Bước 2. Mức lan tỏa'));
+C.push(table([2000, 7026], ['Mức', 'Tiêu chí'], [
+  ['Cao', 'Trên 100 tương tác, hoặc bài xuất hiện trên báo điện tử, trang tin'],
+  ['Trung bình', 'Từ 50 đến 100 tương tác'],
+  ['Thấp', 'Dưới 50 tương tác'],
 ], { boldFirst: true }));
 C.push(gap());
-C.push(P('Bài chia sẻ lại một bài gốc đã được cảnh báo thì cảnh báo ở mức thấp để tránh trùng lặp. Riêng bài chia sẻ lại link website có nội dung tiêu cực thì đánh giá theo mức lan tỏa như bài gốc.'));
+C.push(P('Bài chia sẻ lại một bài đã cảnh báo: ghi ở mức thấp để tránh cảnh báo trùng. Bài chia sẻ lại link website tiêu cực: tính mức lan tỏa như bài gốc.'));
 
-C.push(H2('5.3. Ma trận mức độ nghiêm trọng'));
-C.push(P('Kết hợp loại thông tin và mức lan tỏa theo bảng dưới (theo gợi ý của MHC).'));
+C.push(SUB('Bước 3. Ra cấp độ'));
+C.push(P('Ghép loại thông tin với mức lan tỏa theo bảng sau. "Nghiêm trọng" là Cấp độ 1, "Vừa" là Cấp độ 2, "Thấp" là Cấp độ 3.'));
 C.push(table([4826, 1400, 1400, 1400], ['Loại thông tin tiêu cực', 'Lan tỏa cao', 'Lan tỏa trung bình', 'Lan tỏa thấp'], [
   ['Lãnh đạo: đời tư, quá trình công tác, bổ nhiệm; vi phạm pháp luật; phát ngôn bị xuyên tạc hoặc gây hiểu lầm', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
   ['Bảo mật, bí mật kinh doanh', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
   ['Hoạt động kinh doanh', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
   ['Công bố thông tin, truyền thông không đúng thực tế', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
   ['Sản phẩm, dịch vụ có lỗi mang tính hệ thống', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
-  ['Nhân viên vi phạm pháp luật trên cương vị công tác hoặc lợi dụng danh nghĩa công ty (thông đồng làm giả hồ sơ, tham nhũng, lừa đảo, bị bắt, khởi tố)', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
-  ['Tuyển dụng, đãi ngộ, điều kiện làm việc, khen thưởng, kỷ luật của bộ phận lớn nhân viên', 'Nghiêm trọng', 'Vừa', 'Thấp'],
-  ['Thái độ của nhân viên', 'Nghiêm trọng', 'Vừa', 'Thấp'],
+  ['Nhân viên vi phạm pháp luật khi làm việc hoặc lợi dụng danh nghĩa công ty (làm giả hồ sơ, tham nhũng, lừa đảo, bị bắt, khởi tố)', 'Nghiêm trọng', 'Nghiêm trọng', 'Nghiêm trọng'],
+  ['Phàn nàn về sản phẩm, dịch vụ của một hoặc một nhóm khách hàng, một hoặc vài tỉnh', 'Nghiêm trọng', 'Vừa', 'Thấp'],
   ['Quy định, chính sách, thủ tục', 'Nghiêm trọng', 'Vừa', 'Thấp'],
+  ['Thái độ của nhân viên', 'Nghiêm trọng', 'Vừa', 'Thấp'],
+  ['Tuyển dụng, đãi ngộ, điều kiện làm việc, khen thưởng, kỷ luật của nhiều nhân viên', 'Nghiêm trọng', 'Vừa', 'Thấp'],
   ['Đầu tư, xây dựng cơ bản, đấu thầu', 'Nghiêm trọng', 'Vừa', 'Thấp'],
   ['Cơ sở vật chất, công nghệ yếu kém, lạc hậu', 'Nghiêm trọng', 'Vừa', 'Thấp'],
   ['Nhân viên vi phạm luật giao thông, đánh nhau, phát ngôn nhạy cảm (chính trị, người khuyết tật, cộng đồng LGBT) có liên quan đến công việc', 'Nghiêm trọng', 'Vừa', 'Thấp'],
-  ['Phàn nàn về sản phẩm, dịch vụ mang tính cục bộ (một cá nhân, một nhóm khách hàng, một hoặc vài tỉnh)', 'Nghiêm trọng', 'Vừa', 'Thấp'],
   ['Chia sẻ lại link website có nội dung tiêu cực', 'Nghiêm trọng', 'Vừa', 'Thấp'],
   ['Chia sẻ lại bài viết tiêu cực trên page, group, trang cá nhân', 'Thấp', 'Thấp', 'Thấp'],
   ['Đời tư vi phạm pháp luật của nhân viên, không liên quan công việc', 'Thấp', 'Thấp', 'Thấp'],
 ]));
 
-C.push(H2('5.4. Cấp độ sự vụ và luồng xử lý'));
-C.push(table([1500, 3326, 4200], ['Cấp độ', 'Áp dụng khi', 'Luồng xử lý'], [
-  [['Cấp độ 1', 'Nghiêm trọng'], 'Kết quả ma trận là "Nghiêm trọng". Điển hình: thông tin về lãnh đạo, hoạt động và bí mật kinh doanh, truyền thông sai thực tế, lỗi sản phẩm mang tính hệ thống, phần lớn tin có lan tỏa cao.', 'Luồng C (khẩn): Alert OTT ngay, Marketing báo BĐH, họp nhóm xử lý.'],
-  [['Cấp độ 2', 'Trung bình'], 'Kết quả ma trận là "Vừa". Điển hình: đãi ngộ nhân sự, chất lượng dịch vụ, quy định, chính sách, thủ tục, công nghệ, thái độ nhân viên.', 'Luồng B: MHC đề xuất, Marketing lấy ý kiến PD/PM/CS, chốt và xử lý trong ngày.'],
-  [['Cấp độ 3', 'Thấp'], 'Kết quả ma trận là "Thấp".', 'Luồng A nếu thuộc Nhóm 1 hoặc Nhóm 4 (MHC tự xử lý). Các nhóm khác theo Luồng B, có thể chỉ theo dõi.'],
+C.push(SUB('Bước 4. Chọn luồng'));
+C.push(table([2000, 7026], ['Cấp độ', 'Luồng xử lý'], [
+  ['Cấp độ 1', 'Luồng C (khẩn), với mọi nhóm nội dung.'],
+  ['Cấp độ 2', 'Luồng B, với mọi nhóm nội dung.'],
+  ['Cấp độ 3', 'Nhóm 1 và Nhóm 4: Luồng A (MHC tự xử lý). Nhóm 2, 3, 5: Luồng B; MHC có thể đề xuất chỉ theo dõi.'],
 ], { boldFirst: true }));
 C.push(gap());
-C.push(P('Lưu ý: hình minh họa "Cấp độ khủng hoảng" của MHC xếp "Nhân viên vi phạm pháp luật" vào Cấp độ 3, trong khi bảng chi tiết xếp trường hợp vi phạm trên cương vị công tác là Nghiêm trọng. Quy trình này áp dụng theo bảng chi tiết ở mục 5.3.', { italics: true, color: GREY }));
+C.push(P('MHC không tự xử lý, kể cả với Nhóm 1 và Nhóm 4, khi bài viết nêu một trường hợp khách hàng cụ thể có bằng chứng (ảnh hợp đồng, tin nhắn, ghi âm). Những bài này đưa vào Luồng B để CS kiểm tra.'));
 
-// 6
-C.push(H1('6. Các hình thức xử lý'));
-C.push(table([1500, 3000, 2300, 2226], ['Hình thức', 'Khi nào dùng', 'Người thực hiện', 'Lưu ý'], [
-  ['Theo dõi', 'Tin lan tỏa thấp, chưa có thảo luận, hoặc nguồn đăng ít ảnh hưởng.', 'MHC', 'Chuyển sang hình thức khác nếu tương tác tăng nhanh.'],
-  ['Liên hệ', 'Khách hàng có vấn đề thật, có thể nhận diện được (tên, số điện thoại, mã hợp đồng).', 'CS liên hệ khách hàng; MHC tìm thông tin nguồn đăng nếu có', 'Ưu tiên giải quyết vấn đề của khách hàng. Sau khi xử lý, có thể đề nghị khách hàng cập nhật bài viết.'],
-  ['Seeding', 'Bài có tương tác nhưng chưa lan rộng; bài hỏi đáp có thể giải thích được.', 'MHC', 'Dùng kịch bản đã duyệt; giãn cách thời gian giữa các bình luận; chỉ áp dụng ở trang, nhóm, tài khoản công khai cho phép bình luận.'],
-  ['Report hạn chế tương tác', 'Bài tương tác cao, cần hạn chế tiếp cận người dùng khác.', 'MHC', 'Theo dõi và báo cáo kết quả theo deadline đã tư vấn.'],
-  ['Gỡ bài', 'Thông tin sai sự thật hoặc gây ảnh hưởng nghiêm trọng; video livestream đã kết thúc không seeding được.', 'MHC (kỹ thuật); Pháp chế (yêu cầu chính thức nếu cần)', 'Có chi phí ngoài gói. Form đề xuất phải nêu chi phí, thời gian, thời hạn bảo hành, tỷ lệ thành công. Ví dụ MHC đưa ra: 12.000.000 đồng, 1 đến 15 ngày, bảo hành 7 ngày, tỷ lệ 85%.'],
-  ['Phản hồi chính thức', 'Sự vụ Cấp độ 1, hoặc khi cần VietCredit lên tiếng trên kênh chính thức.', 'Marketing soạn, BĐH duyệt', 'Không dùng seeding thay cho phản hồi chính thức trong sự vụ lớn.'],
+C.push(SEC('B4. Các hình thức xử lý'));
+C.push(table([1700, 3500, 3826], ['Hình thức', 'Dùng khi', 'Lưu ý'], [
+  ['Theo dõi', 'Lan tỏa thấp, chưa có thảo luận, nguồn đăng ít ảnh hưởng', 'Đề xuất hình thức khác nếu tương tác tăng nhanh'],
+  ['Liên hệ', 'Khách hàng có vấn đề thật và nhận diện được', 'MHC cung cấp thông tin nguồn đăng; CS của VietCredit liên hệ khách hàng'],
+  ['Seeding', 'Bài có tương tác nhưng chưa lan rộng; bài hỏi đáp giải thích được', 'Dùng kịch bản đã duyệt; giãn cách giữa các bình luận; chỉ ở trang, nhóm, tài khoản công khai cho phép bình luận'],
+  ['Report', 'Bài tương tác cao, cần hạn chế tiếp cận', 'Báo kết quả theo deadline đã tư vấn'],
+  ['Gỡ bài', 'Thông tin sai sự thật hoặc ảnh hưởng nghiêm trọng; video livestream đã kết thúc không seeding được', 'Có chi phí ngoài gói, chỉ làm khi VietCredit duyệt. Đề xuất phải ghi chi phí, thời gian, bảo hành, tỷ lệ thành công (ví dụ MHC đã đưa: 12.000.000 đồng, 1 đến 15 ngày, bảo hành 7 ngày, tỷ lệ 85%)'],
 ], { boldFirst: true }));
 
-C.push(H2('6.1. Nguyên tắc khi seeding và phản hồi'));
-C.push(BL('Không phủ nhận sai sót đã được xác nhận là có thật. Khi lỗi có thật, nội dung là thừa nhận, nêu hướng xử lý và mời khách hàng liên hệ CS.'));
-C.push(BL('Không công kích, chế giễu người đăng hoặc người bình luận.'));
-C.push(BL('Không nêu thông tin cá nhân, thông tin khoản vay của khách hàng trên mạng xã hội.'));
-C.push(BL('Không hứa hẹn ưu đãi, miễn giảm hoặc kết quả mà sản phẩm không có.'));
-C.push(BL('Với Nhóm 4, không tư vấn hay ngầm khuyến khích việc trốn nợ. Nội dung nhấn vào nghĩa vụ trả nợ, hậu quả với lịch sử tín dụng và kênh hỗ trợ khi khách hàng gặp khó khăn.'));
-C.push(BL('Trong thời gian chờ phương án chính thức, MHC tư vấn cho VietCredit những việc cần tránh (ví dụ: phản hồi vội trên fanpage, xóa bình luận hàng loạt).'));
+C.push(SEC('B5. Nguyên tắc khi seeding'));
+C.push(BL('Không phủ nhận lỗi mà VietCredit đã xác nhận là có thật. Khi đó bình luận ghi nhận và mời khách hàng liên hệ CSKH.'));
+C.push(BL('Không công kích, chế giễu người đăng hay người bình luận.'));
+C.push(BL('Không nêu thông tin cá nhân, thông tin khoản vay của khách hàng.'));
+C.push(BL('Không hứa ưu đãi, miễn giảm hay kết quả mà sản phẩm không có.'));
+C.push(BL('Với Nhóm 4: không gợi ý cách trốn nợ. Bình luận nói về nghĩa vụ trả nợ, ảnh hưởng tới lịch sử tín dụng và việc liên hệ VietCredit khi gặp khó khăn.'));
+C.push(BL('Chỉ dùng kịch bản trong thư viện đã duyệt. Nội dung mới phải qua Luồng B.'));
 
-// 7
-C.push(H1('7. Quy trình xử lý'));
-C.push(H2('7.1. Các bước'));
-C.push(table([700, 2100, 1500, 4726], ['Bước', 'Công việc', 'Thực hiện', 'Mô tả'], [
-  ['1', 'Giám sát', 'MHC', 'Theo dõi liên tục trên hệ thống Social listening theo bộ từ khóa từng sản phẩm. Ghi nhận mọi tin tiêu cực vào file tổng hợp (Mẫu 01).'],
-  ['2', 'Phân loại', 'MHC', 'Xác định nhóm nội dung (mục 5.1), mức lan tỏa (5.2), cấp độ (5.4). Từ đó chọn Luồng A, B hoặc C.'],
-  ['3A', 'Luồng A: tự xử lý', 'MHC', 'Nhóm 1 và Nhóm 4 ở Cấp độ 3: seeding ngay theo kịch bản đã duyệt, không cần trình duyệt từng bài. Ghi kết quả vào file tổng hợp.'],
-  ['3B', 'Luồng B: hỏi ý kiến VC', 'MHC, Marketing, PD/PM, CS', [
-    '• MHC đưa case vào file 10:30 kèm đánh giá và đề xuất phương án.',
-    '• Marketing tiếp nhận, chuyển PD/PM hoặc CS của sản phẩm cho ý kiến.',
-    '• Marketing chốt kịch bản và gửi lại MHC.',
-    '• MHC triển khai trong ngày.']],
-  ['3C', 'Luồng C: khẩn', 'MHC, Marketing, BĐH, Pháp chế', [
-    '• MHC gửi Alert OTT ngay khi phát hiện, sau đó gửi Form đề xuất sự vụ lớn (Mẫu 02).',
-    '• Marketing báo BĐH và triệu tập nhóm xử lý (PD/PM, CS, Pháp chế khi cần).',
-    '• Nhóm xử lý chốt phương án, BĐH duyệt phát ngôn và chi phí.',
-    '• MHC cập nhật diễn biến theo mốc thời gian đã thống nhất cho đến khi đóng sự vụ.']],
-  ['4', 'Theo dõi sau xử lý', 'MHC', 'Theo dõi bài viết sau seeding, report, gỡ bài; theo dõi trong thời gian bảo hành; báo ngay nếu bài viết xuất hiện lại hoặc lan sang kênh khác.'],
-  ['5', 'Đóng case', 'MHC, Marketing', 'Cập nhật trạng thái và kết quả. Kịch bản mới được duyệt đưa vào thư viện để lần sau xử lý theo Luồng A.'],
-  ['6', 'Báo cáo và cải tiến', 'MHC, Marketing, PD/PM', 'Báo cáo tuần, tháng (mục 9). Vấn đề lặp lại được chuyển PD/PM, CS để sửa nguyên nhân gốc.'],
-], { boldFirst: true }));
-
-C.push(H2('7.2. Lịch phối hợp hằng ngày và thời hạn phản hồi'));
-C.push(P('Thời hạn dưới đây là đề xuất, cần chốt với MHC theo năng lực của gói dịch vụ.'));
-C.push(table([2600, 2000, 4426], ['Mốc', 'Thực hiện', 'Nội dung'], [
-  ['10:30, thứ Hai đến thứ Sáu', 'MHC', 'Gửi file tổng hợp tin tiêu cực phát sinh, gồm: case đã tự xử lý (Luồng A) và case cần ý kiến VC (Luồng B) kèm đề xuất.'],
-  ['Trước 14:00 cùng ngày', 'Marketing (sau khi lấy ý kiến PD/PM/CS)', 'Phản hồi phương án cho các case Luồng B. VC chỉ rà soát các case cần ý kiến, không phải xác nhận lại toàn bộ file.'],
-  ['Trong ngày', 'MHC', 'Triển khai phương án đã chốt.'],
-  ['Trong 30 phút từ khi phát hiện', 'MHC', 'Alert OTT với sự vụ Cấp độ 1, kể cả ngoài giờ hành chính và cuối tuần.'],
-  ['Trong 1 giờ từ khi nhận alert', 'Marketing', 'Xác nhận đã nhận, báo BĐH, triệu tập nhóm xử lý.'],
-  ['Trong 4 giờ từ khi nhận alert', 'Nhóm xử lý, BĐH', 'Chốt phương án xử lý Cấp độ 1.'],
+C.push(SEC('B6. Lịch phối hợp và thời hạn'));
+C.push(table([2900, 1900, 4226], ['Thời điểm', 'Bên thực hiện', 'Việc'], [
+  ['10:30, thứ Hai đến thứ Sáu', 'MHC', 'Gửi file tổng hợp (Mẫu 01)'],
+  ['Trước 14:00 cùng ngày', 'VietCredit (Marketing)', 'Trả lời phương án cho các tin Luồng B. VietCredit chỉ xem các tin cần ý kiến, không xác nhận lại toàn bộ file'],
+  ['Trong ngày', 'MHC', 'Triển khai phương án đã chốt'],
+  ['Trong 30 phút từ khi phát hiện', 'MHC', 'Alert OTT với sự vụ Cấp độ 1, cả ngoài giờ và cuối tuần; gửi Form đề xuất (Mẫu 02) ngay sau đó'],
+  ['Trong 1 giờ từ khi có alert', 'VietCredit (Marketing)', 'Xác nhận đã nhận'],
+  ['Trong 4 giờ từ khi có alert', 'VietCredit', 'Chốt phương án Cấp độ 1'],
+  ['Theo mốc hai bên thống nhất', 'MHC', 'Cập nhật diễn biến sự vụ Cấp độ 1 đến khi đóng'],
 ], { boldFirst: true }));
 C.push(gap());
-C.push(P('Ghi chú: trong đề xuất của MHC, phần nguyên tắc ghi 10h và bảng timeline ghi 10:30. Quy trình chọn 10:30 để thống nhất.', { italics: true, color: GREY }));
+C.push(P('Nếu quá 14:00 chưa có phản hồi cho một tin Luồng B, MHC nhắc đầu mối Marketing qua nhóm OTT. MHC không tự triển khai nội dung chưa được duyệt.'));
 
-// 8
-C.push(H1('8. Phòng ngừa chủ động'));
-C.push(P('Để giảm số tin phải xử lý sau khi đã đăng, các bên thực hiện thêm các việc sau:'));
-C.push(NL('**Bộ từ khóa theo sản phẩm.** PD/PM cung cấp tên sản phẩm, tên gọi khách hàng hay dùng, tên đối tác (Điện Máy Xanh, TikTok Shop), các lỗi và thắc mắc thường gặp. MHC cấu hình vào hệ thống Social listening và rà lại mỗi quý.', 'num'));
-C.push(NL('**Thư viện kịch bản duyệt sẵn.** Mỗi nhóm nội dung có bộ câu trả lời mẫu do Marketing duyệt, PD/PM và CS xác nhận nội dung. Thư viện được bổ sung sau mỗi case Luồng B.', 'num'));
-C.push(NL('**Thông báo trước cho MHC.** Khi có bảo trì hệ thống, lỗi đã biết, thay đổi phí hoặc chính sách, chiến dịch lớn, PD/PM báo Marketing để Marketing gửi MHC kèm câu trả lời chuẩn, trước khi khách hàng đăng bài.', 'num'));
-C.push(NL('**Theo dõi sớm khi ra mắt.** Trong 2 tuần đầu sau khi ra mắt sản phẩm, tính năng hoặc chiến dịch, MHC gửi báo cáo nhanh hằng ngày cho sản phẩm đó.', 'num'));
-C.push(NL('**Phối hợp với CS.** Khi tin Nhóm 1 (hotline không gọi được) tăng đột biến, Marketing báo CS kiểm tra năng lực tổng đài. Khi CS nhận nhiều khiếu nại cùng một vấn đề, CS báo Marketing để MHC chuẩn bị kịch bản.', 'num'));
-C.push(NL('**Sửa nguyên nhân gốc.** Báo cáo tháng liệt kê các vấn đề lặp lại nhiều nhất của từng sản phẩm. PD/PM phản hồi kế hoạch khắc phục trong cuộc họp tháng.', 'num'));
-
-// 9
-C.push(H1('9. Báo cáo và chỉ số theo dõi'));
-C.push(table([1800, 2200, 5026], ['Báo cáo', 'Người nhận', 'Nội dung chính'], [
-  ['Hằng ngày (file 10:30)', 'Marketing', 'Danh sách tin tiêu cực mới, nhóm, cấp độ, đề xuất, trạng thái.'],
-  ['Hằng tuần', 'Marketing, PD/PM sản phẩm', 'Số tin tiêu cực theo sản phẩm, kênh, nhóm; tình trạng xử lý; case nổi bật; quota gói đã dùng.'],
-  ['Hằng tháng', 'BĐH, PD/PM, CS', 'Xu hướng tin tiêu cực, hiệu quả xử lý, chi phí phát sinh ngoài gói, các vấn đề lặp lại cần sửa ở sản phẩm.'],
-  ['Theo sự vụ', 'Marketing, BĐH', 'Báo cáo diễn biến và kết quả đối với sự vụ Cấp độ 1.'],
-], { boldFirst: true }));
-C.push(gap());
-C.push(P('Các chỉ số đề xuất theo dõi:'));
-C.push(BL('Số tin tiêu cực mới theo sản phẩm, kênh, nhóm nội dung và cấp độ.'));
-C.push(BL('Tỷ lệ tiêu cực, trung tính, tích cực trong tổng thảo luận về sản phẩm.'));
-C.push(BL('Thời gian từ khi đăng đến khi MHC phát hiện; từ khi phát hiện đến khi có phương án.'));
-C.push(BL('Tỷ lệ case Luồng B được VC phản hồi đúng hạn.'));
-C.push(BL('Tỷ lệ report, gỡ bài thành công và số bài xuất hiện lại trong thời gian bảo hành.'));
-C.push(BL('Quota seeding đã dùng so với gói; chi phí xử lý ngoài gói.'));
-C.push(BL('Số vấn đề lặp lại đã được PD/PM khắc phục.'));
-
-// 10
-C.push(H1('10. Kế hoạch triển khai'));
-C.push(table([2200, 4626, 2200], ['Thời gian', 'Công việc', 'Thực hiện'], [
-  ['Tuần 1', 'BĐH duyệt quy trình. Chốt đầu mối từng bên, nhóm OTT cảnh báo, thời hạn phản hồi với MHC.', 'Marketing, MHC'],
-  ['Tuần 1 đến tuần 2', 'Chốt bộ từ khóa và thư viện kịch bản Nhóm 1 đến Nhóm 4 cho Thẻ tín dụng VC x DMX và TikTok BNPL.', 'PD/PM, CS, Marketing, MHC'],
-  ['Tuần 3 đến tuần 6', 'Chạy thí điểm. Họp nhanh 15 phút mỗi tuần giữa Marketing và MHC để điều chỉnh phân loại.', 'Marketing, MHC'],
-  ['Cuối tuần 6', 'Đánh giá thí điểm theo chỉ số ở mục 9, đề xuất BĐH sản phẩm mở rộng tiếp theo.', 'Marketing'],
+C.push(SEC('B7. Báo cáo MHC gửi VietCredit'));
+C.push(table([1800, 7226], ['Báo cáo', 'Nội dung'], [
+  ['Hằng ngày', 'File 10:30 (Mẫu 01)'],
+  ['Hằng tuần', 'Số tin tiêu cực theo sản phẩm, kênh, nhóm, cấp độ; tình trạng xử lý; tin nổi bật; quota gói đã dùng'],
+  ['Hằng tháng', 'Như báo cáo tuần, thêm: xu hướng so với tháng trước; tỷ lệ tiêu cực, trung tính, tích cực trong thảo luận; hiệu quả report, gỡ bài; các vấn đề khách hàng phàn nàn lặp lại nhiều nhất'],
+  ['Theo sự vụ', 'Diễn biến và kết quả của sự vụ Cấp độ 1'],
 ], { boldFirst: true }));
 
-// 11
-C.push(H1('11. Nội dung cần Ban Điều hành cho ý kiến'));
-C.push(NL('Phạm vi giai đoạn 1 gồm Thẻ tín dụng VC x DMX và TikTok BNPL, các dự án khác chỉ áp dụng luồng khẩn cho Cấp độ 1.', 'num2'));
-C.push(NL('Ủy quyền cho MHC tự xử lý Nhóm 1 và Nhóm 4 ở Cấp độ 3 theo kịch bản đã duyệt.', 'num2'));
-C.push(NL('Hạn mức chi phí xử lý ngoài gói (gỡ bài, report) mà Trưởng Marketing được duyệt; phần vượt hạn mức trình BĐH.', 'num2'));
-C.push(NL('Người có thẩm quyền duyệt phát ngôn chính thức trong sự vụ Cấp độ 1.', 'num2'));
-C.push(NL('Thời hạn phản hồi đề xuất tại mục 7.2.', 'num2'));
+C.push(SEC('B8. VietCredit cung cấp cho MHC'));
+C.push(BL('Bộ từ khóa của từng sản phẩm, cập nhật mỗi quý.'));
+C.push(BL('Thư viện kịch bản seeding đã duyệt cho từng nhóm nội dung.'));
+C.push(BL('Thông báo trước khi có bảo trì hệ thống, lỗi đã biết, thay đổi phí, chính sách hoặc chiến dịch lớn, kèm câu trả lời chuẩn.'));
+C.push(BL('Danh sách thành viên nhóm OTT cảnh báo khẩn.'));
 
-// Appendix
-C.push(H1('Phụ lục. Mẫu biểu'));
-C.push(H2('Mẫu 01. File tổng hợp tin tiêu cực hằng ngày'));
-C.push(P('Mỗi dòng là một tin. Các cột:'));
+C.push(SEC('B9. Mẫu biểu'));
+C.push(SUB('Mẫu 01. File tổng hợp hằng ngày'));
+C.push(P('Mỗi dòng là một tin, gồm các cột:'));
 C.push(table([2600, 6426], ['Cột', 'Cách ghi'], [
-  ['Ngày phát hiện', 'dd/mm/yyyy, giờ phát hiện'],
+  ['Ngày, giờ phát hiện', 'dd/mm/yyyy hh:mm'],
   ['Sản phẩm', 'VC x DMX / TikTok BNPL / sản phẩm khác'],
-  ['Kênh, link', 'Facebook, TikTok, YouTube, Threads, báo điện tử; đường link bài viết'],
+  ['Kênh, link', 'Facebook, TikTok, YouTube, Threads, báo điện tử; link bài viết'],
   ['Nguồn đăng', 'Tên trang, nhóm hoặc tài khoản; thông tin liên hệ nếu có'],
   ['Tóm tắt nội dung', 'Một đến hai câu'],
-  ['Tương tác', 'Lượt thích, bình luận, chia sẻ, lượt xem tại thời điểm ghi nhận'],
+  ['Tương tác', 'Lượt thích, bình luận, chia sẻ, lượt xem lúc ghi nhận'],
   ['Nhóm, cấp độ', 'Nhóm 1 đến 5; Cấp độ 1, 2, 3'],
-  ['Luồng', 'A (đã tự xử lý), B (cần ý kiến VC), C (khẩn)'],
+  ['Luồng', 'A (đã tự xử lý) / B (cần ý kiến VietCredit)'],
   ['Đề xuất của MHC', 'Hình thức xử lý và hướng nội dung'],
-  ['Ý kiến VC', 'Marketing ghi phương án đã chốt'],
-  ['Trạng thái, kết quả', 'Đang xử lý / Đã xử lý / Theo dõi; kết quả sau xử lý'],
+  ['Phương án VietCredit chốt', 'Marketing ghi'],
+  ['Trạng thái, kết quả', 'Đang xử lý / Đã xử lý / Theo dõi; kết quả'],
 ], { boldFirst: true }));
-
-C.push(H2('Mẫu 02. Form đề xuất sự vụ lớn'));
-C.push(P('Dùng khi gửi Alert OTT hoặc cập nhật sự vụ.'));
-C.push(table([2600, 6426], ['Mục', 'Nội dung cần điền'], [
+C.push(SUB('Mẫu 02. Form đề xuất sự vụ lớn'));
+C.push(table([2300, 6726], ['Mục', 'Nội dung'], [
   ['0. Tên sự vụ', 'Tên ngắn gọn, sản phẩm liên quan, cấp độ'],
   ['1. Tổng quan', 'Tổng số bài đăng; số bài trên từng nền tảng'],
-  ['2.1. Nguồn đăng', 'Tên, link nguồn đăng; số điện thoại, email, kênh xã hội khác (nếu có)'],
-  ['2.2. Nội dung', [
-    '• Nội dung sự vụ',
-    '• Tương tác hiện tại và thời điểm thảo luận gần nhất',
-    '• Nội dung thảo luận, tỷ lệ tiêu cực, trung tính, tích cực và ý chính của từng nhóm',
-    '• Các bài viết nổi bật (nếu có)']],
-  ['3. Đánh giá', 'Mức độ lan tỏa, mức độ ảnh hưởng, lý do xếp cấp độ'],
-  ['4. Đề xuất', [
-    '• Phương án: theo dõi, seeding (số bình luận, giãn cách, hướng nội dung), report, gỡ bài',
-    '• Với report, gỡ bài: chi phí, thời gian thực hiện, thời gian bảo hành, tỷ lệ thành công',
-    '• Những việc VietCredit nên tránh trong lúc chờ phương án']],
+  ['2. Nguồn đăng', 'Tên, link; số điện thoại, email, kênh xã hội khác (nếu có)'],
+  ['3. Nội dung', ['• Nội dung sự vụ', '• Tương tác hiện tại, thời điểm thảo luận gần nhất', '• Tỷ lệ bình luận tiêu cực, trung tính, tích cực và ý chính từng nhóm', '• Các bài nổi bật (nếu có)']],
+  ['4. Đánh giá', 'Mức lan tỏa, mức ảnh hưởng, lý do xếp cấp độ'],
+  ['5. Đề xuất', ['• Phương án: theo dõi, seeding (số bình luận, giãn cách, hướng nội dung), report, gỡ bài', '• Với report, gỡ bài: chi phí, thời gian, bảo hành, tỷ lệ thành công', '• Việc VietCredit nên tránh trong lúc chờ phương án']],
+], { boldFirst: true }));
+C.push(SUB('Mẫu 03. Báo cáo tuần, tháng'));
+C.push(P('Theo nội dung ở mục B7. Hai bên thống nhất mẫu trình bày trong tuần đầu triển khai.'));
+
+// ===== PHẦN C =====
+PART('PHẦN C', 'QUY TRÌNH NỘI BỘ VIETCREDIT',
+  'Phần này dùng nội bộ, không gửi MHC. Sau giai đoạn thí điểm, Marketing hoàn thiện phần này để ban hành thành quy trình nội bộ.');
+
+C.push(SEC('C1. Vai trò các đơn vị'));
+C.push(table([1700, 7326], ['Đơn vị', 'Trách nhiệm'], [
+  ['Marketing', ['• Đầu mối duy nhất làm việc với MHC.', '• Đọc file 10:30, chuyển tin Luồng B cho đơn vị liên quan, chốt và gửi phương án cho MHC.', '• Duyệt và quản lý thư viện kịch bản.', '• Báo BĐH sự vụ Cấp độ 1; báo cáo tháng.', '• Theo dõi quota gói và chi phí ngoài gói.']],
+  ['PD/PM sản phẩm', ['• Cho ý kiến về tính năng, lỗi, phí, chính sách, điều kiện sản phẩm.', '• Báo trước cho Marketing các thay đổi có thể gây phản ứng.', '• Lên kế hoạch khắc phục các vấn đề lặp lại.']],
+  ['CS', ['• Kiểm tra thông tin khi bài viết nêu khách hàng cụ thể.', '• Liên hệ khách hàng khi phương án là "Liên hệ".', '• Cung cấp câu trả lời chuẩn cho thắc mắc thường gặp.', '• Báo Marketing khi tổng đài quá tải hoặc nhận nhiều khiếu nại cùng một vấn đề.']],
+  ['Pháp chế', ['• Cho ý kiến khi bài viết có dấu hiệu vu khống, xúc phạm, lộ thông tin khách hàng.', '• Soạn yêu cầu gỡ bài chính thức gửi nền tảng hoặc cơ quan báo chí khi cần.']],
+  ['BĐH', ['• Chỉ đạo xử lý sự vụ Cấp độ 1.', '• Duyệt phát ngôn chính thức và chi phí vượt hạn mức.']],
 ], { boldFirst: true }));
 
-C.push(H2('Mẫu 03. Báo cáo tuần, tháng'));
-C.push(BL('Tổng quan: số tin tiêu cực mới, so sánh với kỳ trước, theo sản phẩm và kênh.'));
-C.push(BL('Phân bổ theo nhóm nội dung và cấp độ.'));
-C.push(BL('Tình trạng xử lý: số case Luồng A, B, C; số case đúng hạn, quá hạn.'));
-C.push(BL('Hiệu quả: tỷ lệ report, gỡ bài thành công; tỷ lệ tiêu cực trong thảo luận trước và sau xử lý.'));
-C.push(BL('Quota gói đã dùng, chi phí ngoài gói.'));
-C.push(BL('Vấn đề lặp lại cần PD/PM, CS xử lý và đề xuất kịch bản mới.'));
+C.push(SEC('C2. Xử lý tin Luồng B'));
+C.push(SUB('Hỏi ai'));
+C.push(table([4026, 5000], ['Nội dung tin', 'Đơn vị cho ý kiến'], [
+  ['Lỗi tính năng, ứng dụng, không thao tác được', 'PD/PM sản phẩm'],
+  ['Phí, lãi, hạn mức, điều kiện, chính sách sản phẩm', 'PD/PM sản phẩm'],
+  ['Khách hàng cụ thể phàn nàn, có bằng chứng', 'CS (kiểm tra và liên hệ khách hàng); PD/PM nếu do lỗi sản phẩm'],
+  ['Thái độ nhân viên, tư vấn sai', 'CS và đơn vị quản lý nhân viên đó'],
+  ['Doanh nghiệp, tình hình kinh doanh, lãnh đạo', 'Marketing trình BĐH'],
+  ['Vu khống, xúc phạm, lộ thông tin khách hàng', 'Pháp chế'],
+], { boldFirst: true }));
+C.push(SUB('Các bước và thời hạn'));
+C.push(table([2300, 2000, 4726], ['Thời hạn', 'Người làm', 'Việc'], [
+  ['10:30', 'MHC', 'Gửi file tổng hợp'],
+  ['Trước 11:30', 'Marketing', 'Lọc tin Luồng B, gửi đơn vị theo bảng "Hỏi ai", kèm link bài và đề xuất của MHC'],
+  ['Trước 13:30', 'PD/PM, CS, Pháp chế', 'Trả lời: thông tin đúng hay sai, hướng trả lời, có cần liên hệ khách hàng không'],
+  ['Trước 14:00', 'Marketing', 'Chốt kịch bản, gửi MHC; lưu kịch bản mới vào thư viện'],
+], { boldFirst: true }));
+C.push(gap());
+C.push(P('Nếu đơn vị không trả lời trước 13:30, Marketing gửi MHC kịch bản chung (ghi nhận phản ánh, mời khách hàng liên hệ CSKH qua hotline 1900 6515) và báo trưởng đơn vị đó. Kịch bản chi tiết gửi bổ sung khi có ý kiến.'));
+
+C.push(SEC('C3. Xử lý sự vụ Cấp độ 1 (Luồng C)'));
+C.push(SUB('Nhóm xử lý'));
+C.push(P('Gồm: Trưởng Marketing (điều phối), PD/PM của sản phẩm liên quan, Trưởng CS, Pháp chế, và thành viên BĐH phụ trách. Danh sách và số điện thoại lập sẵn, cập nhật mỗi quý.'));
+C.push(SUB('Các bước'));
+NUMS([
+  'Trong 1 giờ từ khi có alert: Marketing xác nhận với MHC, báo BĐH, gọi nhóm xử lý.',
+  'Các đơn vị kiểm tra sự việc: đúng hay sai, bao nhiêu khách hàng bị ảnh hưởng, đã có ai khiếu nại qua tổng đài chưa.',
+  'Trong 4 giờ: nhóm xử lý đề xuất phương án; BĐH duyệt phương án, nội dung phát ngôn và chi phí.',
+  'Marketing gửi phương án cho MHC; CS dùng cùng nội dung trả lời khách hàng gọi tổng đài.',
+  'Nhóm xử lý theo dõi theo mốc MHC cập nhật cho đến khi đóng sự vụ.',
+  'Trong 5 ngày làm việc sau khi đóng: Marketing gửi BĐH báo cáo nguyên nhân, cách xử lý, chi phí và việc cần sửa.',
+]);
+C.push(SUB('Nguyên tắc'));
+C.push(BL('Chỉ người được BĐH giao mới phát ngôn với báo chí và trên kênh chính thức.'));
+C.push(BL('Nhân viên không tự bình luận, giải thích về sự vụ trên tài khoản cá nhân.'));
+C.push(BL('Không xóa bình luận hàng loạt trên fanpage của VietCredit khi chưa có ý kiến nhóm xử lý.'));
+C.push(BL('Trong sự vụ lớn, không dùng seeding thay cho phản hồi chính thức.'));
+
+C.push(SEC('C4. Duyệt chi phí ngoài gói'));
+C.push(table([3500, 5526], ['Khoản', 'Người duyệt'], [
+  ['Seeding, theo dõi trong quota gói', 'Không cần duyệt riêng'],
+  ['Report, gỡ bài đến hạn mức [số tiền, BĐH chốt] mỗi lần', 'Trưởng Marketing'],
+  ['Vượt hạn mức trên, hoặc sự vụ Cấp độ 1', 'BĐH'],
+], { boldFirst: true }));
+
+C.push(SEC('C5. Phòng ngừa chủ động'));
+NUMS([
+  '**Bộ từ khóa.** PD/PM cung cấp tên sản phẩm, cách khách hàng hay gọi, tên đối tác (Điện Máy Xanh, TikTok Shop), các lỗi và thắc mắc thường gặp. Marketing gửi MHC và rà lại mỗi quý.',
+  '**Thư viện kịch bản.** Marketing duyệt câu trả lời mẫu cho từng nhóm nội dung; PD/PM và CS xác nhận nội dung đúng.',
+  '**Báo trước.** Trước khi bảo trì hệ thống, đổi phí, chính sách, chạy chiến dịch lớn, hoặc khi có lỗi đã biết, PD/PM báo Marketing ít nhất 2 ngày làm việc (trường hợp lỗi đột xuất thì báo ngay), kèm câu trả lời chuẩn.',
+  '**Theo dõi khi ra mắt.** Trong 2 tuần đầu ra mắt sản phẩm, tính năng hoặc chiến dịch, Marketing yêu cầu MHC báo cáo nhanh hằng ngày cho sản phẩm đó.',
+  '**Phối hợp với CS.** Khi tin "hotline không gọi được" tăng đột biến, Marketing báo CS kiểm tra tổng đài. Khi CS nhận nhiều khiếu nại cùng một vấn đề, CS báo Marketing để chuẩn bị kịch bản trước.',
+  '**Sửa tận gốc.** Họp tháng giữa Marketing, PD/PM, CS xem 5 vấn đề bị phàn nàn nhiều nhất trong báo cáo tháng của MHC; PD/PM đưa ra kế hoạch khắc phục và thời hạn.',
+]);
+
+C.push(SEC('C6. Báo cáo nội bộ và chỉ số theo dõi'));
+C.push(P('Marketing gửi BĐH báo cáo tháng, gồm báo cáo của MHC và các chỉ số sau:'));
+C.push(BL('Số tin tiêu cực mới theo sản phẩm, kênh, nhóm, cấp độ; so với tháng trước.'));
+C.push(BL('Tỷ lệ tiêu cực trong tổng thảo luận về từng sản phẩm.'));
+C.push(BL('Thời gian từ khi phát hiện đến khi có phương án; tỷ lệ tin Luồng B được trả lời trước 14:00.'));
+C.push(BL('Tỷ lệ report, gỡ bài thành công; số bài xuất hiện lại trong thời gian bảo hành.'));
+C.push(BL('Quota gói đã dùng; chi phí ngoài gói.'));
+C.push(BL('Các vấn đề lặp lại và tiến độ khắc phục của PD/PM.'));
+
+// ===== PHẦN D =====
+PART('PHẦN D', 'TRIỂN KHAI VÀ NỘI DUNG CẦN BAN ĐIỀU HÀNH QUYẾT ĐỊNH', null);
+
+C.push(SEC('D1. Kế hoạch triển khai'));
+C.push(table([2000, 4826, 2200], ['Thời gian', 'Việc', 'Thực hiện'], [
+  ['Tuần 1', 'BĐH duyệt quy trình. Gửi Phần B cho MHC để thống nhất. Lập nhóm OTT và danh sách nhóm xử lý Cấp độ 1.', 'Marketing'],
+  ['Tuần 1 đến 2', 'Chốt bộ từ khóa và thư viện kịch bản cho Thẻ tín dụng VC x DMX và TikTok BNPL.', 'PD/PM, CS, Marketing, MHC'],
+  ['Tuần 3 đến 6', 'Chạy thí điểm. Marketing và MHC họp 15 phút mỗi tuần để chỉnh cách phân loại.', 'Marketing, MHC'],
+  ['Cuối tuần 6', 'Đánh giá thí điểm theo chỉ số ở mục C6; hoàn thiện Phần C thành quy trình nội bộ; đề xuất sản phẩm áp dụng tiếp theo.', 'Marketing'],
+], { boldFirst: true }));
+
+C.push(SEC('D2. Nội dung cần BĐH quyết định'));
+NUMS([
+  'Phạm vi giai đoạn 1: Thẻ tín dụng VC x DMX và TikTok BNPL; các dự án khác chỉ áp dụng luồng khẩn cho Cấp độ 1.',
+  'Cho phép MHC tự xử lý Nhóm 1 và Nhóm 4 ở Cấp độ 3 theo kịch bản đã duyệt.',
+  'Hạn mức chi phí report, gỡ bài mà Trưởng Marketing được duyệt mỗi lần.',
+  'Người được phát ngôn chính thức và thành viên BĐH phụ trách khi có sự vụ Cấp độ 1.',
+  'Các thời hạn: VietCredit trả lời trước 14:00; Cấp độ 1 cảnh báo trong 30 phút, có phương án trong 4 giờ.',
+]);
+
+C.push(SEC('D3. Điểm đã điều chỉnh so với tài liệu của MHC'));
+C.push(BL('Giờ gửi file: tài liệu MHC ghi cả 10h và 10:30; quy trình dùng 10:30.'));
+C.push(BL('MHC đề xuất VietCredit xác nhận toàn bộ file mỗi ngày. Quy trình đổi thành: MHC tự phân loại, VietCredit chỉ trả lời các tin Luồng B.'));
+C.push(BL('Nhân viên vi phạm pháp luật: hình "Cấp độ khủng hoảng" của MHC xếp ở Cấp độ 3, bảng chi tiết xếp trường hợp vi phạm khi làm việc là Nghiêm trọng. Quy trình theo bảng chi tiết.'));
 
 // ---------- document ----------
 const doc = new Document({
@@ -385,9 +454,25 @@ const doc = new Document({
       style: { paragraph: { indent: { left: 540, hanging: 270 } } } }] },
     { reference: 'cbul', levels: [{ level: 0, format: LevelFormat.BULLET, text: '•', alignment: AlignmentType.LEFT,
       style: { paragraph: { indent: { left: 220, hanging: 180 } } } }] },
-    { reference: 'num', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+    { reference: 'n1', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
       style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
-    { reference: 'num2', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+    { reference: 'n2', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n3', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n4', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n5', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n6', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n7', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n8', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n9', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
+      style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
+    { reference: 'n10', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
       style: { paragraph: { indent: { left: 540, hanging: 300 } } } }] },
   ] },
   sections: [{
